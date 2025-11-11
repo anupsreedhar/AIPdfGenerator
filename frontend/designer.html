@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Designer - PDF Template Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-file-pdf"></i> PDF Template Generator
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="designer.html">
+                            <i class="fas fa-pencil-ruler"></i> Designer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="generate.html">
+                            <i class="fas fa-file-export"></i> Generate PDF
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Designer Interface -->
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <!-- Left Sidebar - Tools -->
+            <div class="col-md-2 bg-light p-3">
+                <h5><i class="fas fa-tools"></i> Tools</h5>
+                
+                <!-- Template Info -->
+                <div class="mb-3">
+                    <label class="form-label">Template Name</label>
+                    <input type="text" class="form-control" id="templateName" placeholder="My Template">
+                </div>
+
+                <hr>
+
+                <!-- Field Types -->
+                <h6>Add Fields</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="addField('text')">
+                        <i class="fas fa-font"></i> Text Field
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="addField('number')">
+                        <i class="fas fa-hashtag"></i> Number
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="addField('date')">
+                        <i class="fas fa-calendar"></i> Date
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="addField('checkbox')">
+                        <i class="fas fa-check-square"></i> Checkbox
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="addField('label')">
+                        <i class="fas fa-tag"></i> Label
+                    </button>
+                    <button class="btn btn-outline-dark btn-sm" onclick="showTableModal()">
+                        <i class="fas fa-table"></i> Table
+                    </button>
+                </div>
+
+                <hr>
+
+                <!-- Canvas Controls -->
+                <h6>Canvas</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteSelected()">
+                        <i class="fas fa-trash"></i> Delete Selected
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="clearCanvas()">
+                        <i class="fas fa-eraser"></i> Clear All
+                    </button>
+                </div>
+
+                <hr>
+
+                <!-- Actions -->
+                <h6>Actions</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-success" onclick="saveTemplate()">
+                        <i class="fas fa-save"></i> Save Template
+                    </button>
+                    <button class="btn btn-primary" onclick="loadTemplate()">
+                        <i class="fas fa-folder-open"></i> Load Template
+                    </button>
+                    <button class="btn btn-danger" onclick="document.getElementById('pdfFileInput').click()">
+                        <i class="fas fa-file-pdf"></i> Import PDF
+                    </button>
+                    <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;" onchange="importPDFTemplate()">
+                    <button class="btn btn-info" onclick="previewTemplate()">
+                        <i class="fas fa-eye"></i> Preview JSON
+                    </button>
+                    <button class="btn btn-warning" onclick="exportTemplateJSON()">
+                        <i class="fas fa-download"></i> Export JSON
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Canvas Area -->
+            <div class="col-md-8">
+                <div class="canvas-container">
+                    <div class="canvas-toolbar bg-light p-2 mb-2 rounded">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-secondary">Page Size: Letter (8.5" × 11")</span>
+                                <span class="badge bg-info ms-2" id="fieldCount">Fields: 0</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="zoomOut()">
+                                    <i class="fas fa-search-minus"></i>
+                                </button>
+                                <span class="mx-2" id="zoomLevel">100%</span>
+                                <button class="btn btn-sm btn-outline-secondary" onclick="zoomIn()">
+                                    <i class="fas fa-search-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fabric.js Canvas -->
+                    <div class="canvas-wrapper">
+                        <canvas id="designCanvas"></canvas>
+                    </div>
+
+                    <div class="mt-2 text-muted small">
+                        <i class="fas fa-info-circle"></i> 
+                        Click "Add Fields" buttons to add elements, then drag and resize them on the canvas.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar - Properties -->
+            <div class="col-md-2 bg-light p-3">
+                <h5><i class="fas fa-sliders-h"></i> Properties</h5>
+                
+                <div id="propertiesPanel">
+                    <p class="text-muted small">Select a field to edit properties</p>
+                </div>
+
+                <div id="fieldProperties" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Field Name</label>
+                        <input type="text" class="form-control form-control-sm" id="fieldName">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Field Type</label>
+                        <select class="form-select form-select-sm" id="fieldType">
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                            <option value="date">Date</option>
+                            <option value="checkbox">Checkbox</option>
+                            <option value="label">Label</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Label Text</label>
+                        <input type="text" class="form-control form-control-sm" id="fieldLabel">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Font Size</label>
+                        <input type="number" class="form-control form-control-sm" id="fontSize" value="12" min="6" max="72">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Font Weight</label>
+                        <select class="form-select form-select-sm" id="fontWeight">
+                            <option value="normal">Normal</option>
+                            <option value="bold">Bold</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Position</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" id="posX" placeholder="X">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" id="posY" placeholder="Y">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Size</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" id="width" placeholder="Width">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" class="form-control form-control-sm" id="height" placeholder="Height">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-sm btn-primary w-100" onclick="applyProperties()">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Template Modal -->
+    <div class="modal fade" id="loadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Load Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="templateList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Template JSON Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="jsonPreview" class="bg-light p-3 rounded" style="max-height: 500px; overflow-y: auto;"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="downloadJSON()">
+                        <i class="fas fa-download"></i> Download JSON
+                    </button>
+                    <button class="btn btn-secondary" onclick="copyJSON()">
+                        <i class="fas fa-copy"></i> Copy JSON
+                    </button>
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Configuration Modal -->
+    <div class="modal fade" id="tableModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-table"></i> Add Table</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Table Name</label>
+                        <input type="text" class="form-control" id="tableName" placeholder="my_table">
+                        <small class="text-muted">Unique identifier for the table</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Number of Rows</label>
+                        <input type="number" class="form-control" id="tableRows" value="3" min="1" max="20">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Number of Columns</label>
+                        <input type="number" class="form-control" id="tableColumns" value="3" min="1" max="10">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Column Headers (comma-separated)</label>
+                        <input type="text" class="form-control" id="tableHeaders" placeholder="Name, Email, Phone">
+                        <small class="text-muted">Optional: Leave empty for no headers</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cell Width</label>
+                            <input type="number" class="form-control" id="tableCellWidth" value="100" min="50" max="300">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cell Height</label>
+                            <input type="number" class="form-control" id="tableCellHeight" value="25" min="15" max="100">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addTable()">
+                        <i class="fas fa-plus"></i> Add Table
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/designer.js"></script>
+</body>
+</html>

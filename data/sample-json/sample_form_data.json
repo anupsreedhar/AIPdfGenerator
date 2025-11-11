@@ -1,0 +1,18 @@
+{
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "email": "jane.smith@example.com",
+  "phone": "555-123-4567",
+  "address": "123 Main Street",
+  "city": "Springfield",
+  "state": "IL",
+  "zip_code": "62701",
+  "country": "USA",
+  "date_of_birth": "1990-05-15",
+  "gender": "Female",
+  "subscribe_newsletter": "Yes",
+  "agree_terms": "Yes",
+  "emergency_contact": "John Smith",
+  "emergency_phone": "555-987-6543",
+  "comments": "Looking forward to getting started!"
+}

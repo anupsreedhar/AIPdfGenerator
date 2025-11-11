@@ -1,0 +1,128 @@
+{
+  "name": "Employee Registration Form",
+  "description": "Standard employee registration form with personal and contact information",
+  "fields": [
+    {
+      "name": "employee_id",
+      "type": "text",
+      "label": "Employee ID",
+      "x": 50,
+      "y": 100,
+      "width": 150,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "first_name",
+      "type": "text",
+      "label": "First Name",
+      "x": 50,
+      "y": 140,
+      "width": 200,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "last_name",
+      "type": "text",
+      "label": "Last Name",
+      "x": 280,
+      "y": 140,
+      "width": 200,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "email",
+      "type": "email",
+      "label": "Email Address",
+      "x": 50,
+      "y": 180,
+      "width": 300,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "phone",
+      "type": "tel",
+      "label": "Phone Number",
+      "x": 50,
+      "y": 220,
+      "width": 200,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "department",
+      "type": "text",
+      "label": "Department",
+      "x": 50,
+      "y": 260,
+      "width": 200,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "position",
+      "type": "text",
+      "label": "Position",
+      "x": 280,
+      "y": 260,
+      "width": 200,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "start_date",
+      "type": "date",
+      "label": "Start Date",
+      "x": 50,
+      "y": 300,
+      "width": 150,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "salary",
+      "type": "number",
+      "label": "Salary",
+      "x": 280,
+      "y": 300,
+      "width": 150,
+      "height": 20,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    },
+    {
+      "name": "address",
+      "type": "textarea",
+      "label": "Address",
+      "x": 50,
+      "y": 340,
+      "width": 430,
+      "height": 60,
+      "fontSize": 12,
+      "fontWeight": "normal",
+      "fontFamily": "Arial"
+    }
+  ],
+  "pageWidth": 612,
+  "pageHeight": 792
+}
