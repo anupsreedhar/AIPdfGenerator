@@ -3,7 +3,7 @@
  */
 
 let selectedTemplate = null;
-let apiUrl = 'http://localhost:9000/api/pdf/generate';
+let apiUrl = 'http://localhost:9000/api/pdf/generate-json';
 
 // Load on page ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -313,18 +313,19 @@ async function generatePDF() {
         document.getElementById('errorMessage').style.display = 'none';
         document.getElementById('successMessage').style.display = 'none';
 
-        // Prepare request
+        // Prepare request with proper structure
         const request = {
             template: {
                 name: selectedTemplate.name,
                 fields: selectedTemplate.fields,
                 pageWidth: selectedTemplate.pageWidth || 612,
-                pageHeight: selectedTemplate.pageHeight || 792
+                pageHeight: selectedTemplate.pageHeight || 792,
+                pdfFilePath: selectedTemplate.pdfFilePath || null
             },
             data: data
         };
 
-        // Call API
+        // Call API with JSON
         const response = await axios.post(apiUrl, request, {
             responseType: 'blob',
             headers: {

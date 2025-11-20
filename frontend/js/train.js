@@ -1,8 +1,9 @@
 /**
- * ML Training Interface
+ * ML Training Interface & AI PDF Import
  */
 
 let trainingApiUrl = 'http://localhost:9000/api/train';
+let importApiUrl = 'http://localhost:9000/api/pdf/import-ai';
 let trainingInterval = null;
 
 // Load on page ready
@@ -289,4 +290,176 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+// ============================================================================
+// AI PDF Import Functions
+// ============================================================================
+
+/**
+ * Import PDF with AI
+ */
+async function importWithAI() {
+    const fileInput = document.getElementById('pdfFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a PDF file first');
+        return;
+    }
+    
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please select a valid PDF file');
+        return;
+    }
+    
+    // Hide previous results
+    document.getElementById('aiResults').style.display = 'none';
+    document.getElementById('aiError').style.display = 'none';
+    
+    // Show progress
+    document.getElementById('aiProgress').style.display = 'block';
+    document.getElementById('importBtn').disabled = true;
+    
+    updateAIProgress(20, 'Uploading PDF...');
+    
+    try {
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        updateAIProgress(40, 'Analyzing with LayoutLMv3 AI...');
+        
+        // Call AI import API
+        const response = await axios.post(importApiUrl, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        
+        updateAIProgress(100, 'Complete!');
+        
+        // Process results
+        const template = response.data;
+        
+        // Save template to localStorage
+        if (template.fields && template.fields.length > 0) {
+            TemplateStorage.save(template);
+            
+            // Show results
+            setTimeout(() => {
+                displayAIResults(template);
+            }, 500);
+        } else {
+            throw new Error('No fields detected in PDF. The PDF might be empty or not contain form fields.');
+        }
+        
+    } catch (error) {
+        console.error('AI Import failed:', error);
+        displayAIError(error);
+    } finally {
+        document.getElementById('importBtn').disabled = false;
+    }
+}
+
+/**
+ * Update AI progress
+ */
+function updateAIProgress(percent, message) {
+    const progressBar = document.getElementById('aiProgressBar');
+    progressBar.style.width = percent + '%';
+    progressBar.textContent = message;
+    
+    document.getElementById('aiProgressText').textContent = message;
+}
+
+/**
+ * Display AI results
+ */
+function displayAIResults(template) {
+    document.getElementById('aiProgress').style.display = 'none';
+    document.getElementById('aiResults').style.display = 'block';
+    
+    const numFields = template.fields.length;
+    const templateName = template.name || 'Unnamed Template';
+    
+    document.getElementById('aiResultMessage').textContent = 
+        `Successfully imported "${templateName}" with ${numFields} field${numFields !== 1 ? 's' : ''}!`;
+    
+    // Display detected fields
+    const fieldsContainer = document.getElementById('detectedFields');
+    fieldsContainer.innerHTML = '';
+    
+    if (numFields === 0) {
+        fieldsContainer.innerHTML = '<p class="text-muted">No fields detected</p>';
+    } else {
+        const fieldsList = document.createElement('div');
+        fieldsList.className = 'list-group';
+        
+        template.fields.forEach((field, index) => {
+            const fieldItem = document.createElement('div');
+            fieldItem.className = 'list-group-item';
+            fieldItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${index + 1}. ${field.label || field.name}</strong>
+                        <div class="small text-muted">
+                            Type: ${field.type || 'text'} | 
+                            Position: (${field.x}, ${field.y}) | 
+                            Size: ${field.width}×${field.height}
+                        </div>
+                    </div>
+                    <span class="badge bg-primary">${field.type || 'text'}</span>
+                </div>
+            `;
+            fieldsList.appendChild(fieldItem);
+        });
+        
+        fieldsContainer.appendChild(fieldsList);
+    }
+    
+    // Show success notification
+    showNotification(`Successfully imported ${numFields} field${numFields !== 1 ? 's' : ''}!`, 'success');
+}
+
+/**
+ * Display AI error
+ */
+function displayAIError(error) {
+    document.getElementById('aiProgress').style.display = 'none';
+    document.getElementById('aiError').style.display = 'block';
+    
+    let errorMsg = 'Unknown error occurred';
+    
+    if (error.response) {
+        const detail = error.response.data?.detail;
+        if (typeof detail === 'object') {
+            errorMsg = detail.message || detail.error || JSON.stringify(detail);
+        } else {
+            errorMsg = detail || `Server error: ${error.response.status}`;
+        }
+    } else if (error.request) {
+        errorMsg = 'Cannot connect to backend server. Please ensure the Python backend is running on http://localhost:9000';
+    } else {
+        errorMsg = error.message;
+    }
+    
+    document.getElementById('aiErrorMessage').textContent = errorMsg;
+}
+
+/**
+ * Reset AI import
+ */
+function resetAIImport() {
+    document.getElementById('pdfFile').value = '';
+    document.getElementById('aiResults').style.display = 'none';
+    document.getElementById('aiError').style.display = 'none';
+    document.getElementById('aiProgress').style.display = 'none';
+}
+
+/**
+ * Go to generate page
+ */
+function goToGenerate() {
+    window.location.href = 'generate.html';
 }

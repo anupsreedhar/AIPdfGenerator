@@ -36,11 +36,18 @@ class PDFService:
         Returns:
             bytes: PDF file as bytes
         """
+        print(f"🔧 generate_pdf called")
+        print(f"📄 Template: {template.name}")
+        print(f"📁 Background PDF path: {background_pdf_path}")
+        print(f"✅ Background exists: {os.path.exists(background_pdf_path) if background_pdf_path else 'N/A'}")
+        
         # If background PDF provided, use overlay mode
         if background_pdf_path and os.path.exists(background_pdf_path):
+            print("🎨 Using OVERLAY MODE")
             return self._generate_pdf_with_overlay(template, data, background_pdf_path)
         
         # Otherwise, generate simple PDF
+        print("📝 Using SIMPLE MODE (no background)")
         return self._generate_simple_pdf(template, data)
     
     def _generate_simple_pdf(self, template, data):
@@ -85,6 +92,10 @@ class PDFService:
         This preserves the original PDF's design, images, and layout
         """
         try:
+            print(f"🎨 Overlay Mode: Using background PDF: {background_pdf_path}")
+            print(f"📝 Overlaying {len(template.fields)} fields")
+            print(f"📊 Data keys: {list(data.keys())}")
+            
             # Create overlay with data
             overlay_buffer = BytesIO()
             
@@ -92,12 +103,19 @@ class PDFService:
             page_width = template.pageWidth if hasattr(template, 'pageWidth') else 612
             page_height = template.pageHeight if hasattr(template, 'pageHeight') else 792
             
+            print(f"📐 Page size: {page_width}x{page_height}")
+            
             # Create canvas for overlay (transparent background)
             c = canvas.Canvas(overlay_buffer, pagesize=(page_width, page_height))
             
             # Draw only the data fields (no headers, transparent background)
+            fields_drawn = 0
             for field in template.fields:
                 self._draw_field(c, field, data, page_height, overlay_mode=True)
+                if data.get(field.name):
+                    fields_drawn += 1
+            
+            print(f"✅ Drew {fields_drawn} fields with data")
             
             c.save()
             overlay_buffer.seek(0)
@@ -203,11 +221,11 @@ class PDFService:
                 c.setFillColorRGB(0.4, 0.4, 0.4)
                 c.drawString(x, y + height + 3, field_label + ":")
             
-            # Draw value inside field
+            # Draw value inside field (ALWAYS draw in both modes)
             value = data.get(field_name, '')
             if value:
                 c.setFont(font_name, font_size)
-                c.setFillColorRGB(0, 0, 0)
+                c.setFillColorRGB(0, 0, 0)  # Black text
                 
                 # Truncate if too long
                 text = str(value)
@@ -215,6 +233,7 @@ class PDFService:
                 if len(text) > max_chars:
                     text = text[:max_chars - 3] + '...'
                 
+                # Draw the text value
                 c.drawString(x + 5, y + (height / 2) - (font_size / 3), text)
         
         # Reset colors

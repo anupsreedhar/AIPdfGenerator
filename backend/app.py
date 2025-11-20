@@ -142,6 +142,7 @@ class Template(BaseModel):
     fields: List[Field]
     pageWidth: Optional[int] = 612
     pageHeight: Optional[int] = 792
+    pdfFilePath: Optional[str] = None  # Path to stored PDF template
 
 class PDFRequest(BaseModel):
     template: Template
@@ -233,6 +234,64 @@ async def generate_pdf(
             }
         )
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/pdf/generate-json")
+async def generate_pdf_json(request: PDFRequest):
+    """
+    Generate a PDF from template and data (JSON version)
+    
+    Request body:
+    {
+        "template": {
+            "name": "Template Name",
+            "fields": [...],
+            "pageWidth": 612,
+            "pageHeight": 792,
+            "pdfFilePath": "optional/path/to/pdf"
+        },
+        "data": {
+            "field1": "value1",
+            "field2": "value2"
+        }
+    }
+    
+    Returns: PDF file as bytes
+    """
+    try:
+        template = request.template
+        data_dict = request.data
+        
+        # Determine which PDF to use as background
+        template_pdf_path = None
+        
+        # Check if template has a stored PDF path
+        if hasattr(template, 'pdfFilePath') and template.pdfFilePath:
+            # Convert relative path to absolute
+            stored_pdf_path = os.path.join(os.path.dirname(__file__), '..', template.pdfFilePath)
+            if os.path.exists(stored_pdf_path):
+                template_pdf_path = stored_pdf_path
+                print(f"📄 Using stored template PDF: {template_pdf_path}")
+            else:
+                print(f"⚠️ Stored PDF not found: {stored_pdf_path}, generating basic PDF")
+        
+        # No background PDF - generate basic PDF
+        if not template_pdf_path:
+            print("📝 No background PDF - generating basic PDF")
+        
+        # Generate PDF (with or without background)
+        pdf_bytes = pdf_service.generate_pdf(template, data_dict, template_pdf_path)
+        
+        # Return as downloadable file
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={template.name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+            }
+        )
+    except Exception as e:
+        logger.error(f"PDF generation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # ============================================================================
