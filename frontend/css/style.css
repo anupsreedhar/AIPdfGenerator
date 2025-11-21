@@ -218,17 +218,22 @@ body {
    FEATURE CARDS
    ============================================ */
 .glass-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .glass-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card .card-body {
+    padding: 24px;
 }
 
 .feature-icon {
@@ -355,8 +360,15 @@ body {
 }
 
 .card-header {
-    border-bottom: none;
-    border-radius: 15px 15px 0 0 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px 16px 0 0 !important;
+    padding: 16px 24px;
+}
+
+.card-header h5,
+.card-header h6 {
+    font-size: 1rem;
+    letter-spacing: -0.01em;
 }
 
 .stats-card {
@@ -427,12 +439,13 @@ body {
 .template-list {
     max-height: 500px;
     overflow-y: auto;
+    padding-right: 8px;
 }
 
 .template-item {
-    padding: 15px;
-    margin-bottom: 10px;
-    border: 2px solid #e9ecef;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
@@ -441,23 +454,26 @@ body {
 
 .template-item:hover {
     border-color: var(--primary-color);
-    background-color: #f0f4ff;
-    transform: translateX(5px);
+    background-color: #f8fafc;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.12);
 }
 
 .template-item.selected {
     border-color: var(--primary-color);
-    background-color: #e7f3ff;
-    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    background-color: #eff6ff;
+    box-shadow: 0 2px 12px rgba(99, 102, 241, 0.18);
 }
 
 .template-item h6 {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     color: var(--dark-color);
+    font-size: 0.95rem;
 }
 
 .template-item small {
-    color: #6c757d;
+    color: #64748b;
+    font-size: 0.875rem;
 }
 
 /* ============================================
@@ -466,24 +482,37 @@ body {
 #formFields .form-label {
     font-weight: 600;
     color: var(--dark-color);
-    margin-bottom: 0.5rem;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
 }
 
-#formFields input,
+#formFields .col-md-6,
+#formFields .col-12 {
+    margin-bottom: 20px;
+}
+
+#formFields input:not([type="checkbox"]),
 #formFields select,
 #formFields textarea {
     border-radius: 10px;
-    border: 2px solid #e2e8f0;
-    padding: 0.75rem 1rem;
-    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
 }
 
-#formFields input:focus,
+#formFields input:not([type="checkbox"]):focus,
 #formFields select:focus,
 #formFields textarea:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
     outline: none;
+    background-color: #fafbfc;
+}
+
+#formFields textarea {
+    min-height: 100px;
+    resize: vertical;
 }
 
 /* ============================================
@@ -491,15 +520,35 @@ body {
    ============================================ */
 .btn {
     border-radius: 10px;
-    padding: 0.625rem 1.25rem;
+    padding: 12px 20px;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     border: none;
+    font-size: 0.95rem;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.btn-lg {
+    padding: 14px 28px;
+    font-size: 1rem;
+}
+
+.btn-outline-secondary,
+.btn-outline-info,
+.btn-outline-primary {
+    border: 1px solid #e2e8f0;
+    background: white;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-info:hover,
+.btn-outline-primary:hover {
+    border-color: var(--primary-color);
+    background: #f8fafc;
 }
 
 .btn-primary {
@@ -780,3 +829,120 @@ footer {
 .bg-danger {
     background: var(--danger-color) !important;
 }
+
+/* ============================================
+   GENERATE PAGE REFINEMENTS
+   ============================================ */
+/* Improved spacing for file upload sections */
+.mb-4 {
+    margin-bottom: 24px !important;
+}
+
+.form-label.fw-bold {
+    margin-bottom: 10px;
+    display: block;
+}
+
+.form-control[type="file"] {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fafbfc;
+    transition: all 0.2s ease;
+}
+
+.form-control[type="file"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+    outline: none;
+}
+
+/* Spacing for button groups */
+.d-flex.gap-2 {
+    gap: 12px !important;
+    margin-top: 24px;
+}
+
+/* Input group refinement */
+.input-group-text {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-right: none;
+    padding: 12px 16px;
+}
+
+.input-group .form-control {
+    border-left: none;
+    padding: 12px 16px;
+}
+
+/* Section divider */
+hr.my-4 {
+    margin: 32px 0;
+    border-color: #e2e8f0;
+    opacity: 1;
+}
+
+/* Small helper text */
+small.text-muted {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* Alert messages */
+.alert {
+    border-radius: 12px;
+    border: 1px solid;
+    padding: 16px 20px;
+    margin-top: 20px;
+}
+
+.alert-success {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+/* Search input specific */
+#templateSearch {
+    font-size: 0.9rem;
+}
+
+#templateSearch::placeholder {
+    color: #94a3b8;
+}
+
+/* Recent generations section */
+#recentList {
+    padding: 0;
+}
+
+#recentList .list-group-item {
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Container spacing */
+.container.my-5 {
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+}
+
+/* Column spacing */
+.col-md-4.mb-4,
+.col-md-8 {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
